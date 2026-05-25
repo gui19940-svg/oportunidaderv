@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel RV — A23963 SRP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy2:#13294d;--blue:#1e3a5f;--steel:#2c4a7c;
+  --red:#dc2626;--red-bg:#fef2f2;--amber:#d97706;--amber-bg:#fffbeb;
+  --green:#059669;--gold:#b8860b;--gold-bg:#fef9e7;
+  --bg:#f1f5f9;--card:#fff;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',system-ui,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px;line-height:1.45}
+.hd{background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:16px 24px 14px;border-bottom:3px solid var(--amber)}
+.hd-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.hd-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:600}
+.hd-h1{font-size:20px;font-weight:800;letter-spacing:-.4px;margin-top:3px}
+.hd-h1 b{color:var(--amber)}
+.hd-right{text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.hd-filial{font-size:11px;color:rgba(255,255,255,.6)}
+.rv-hd{display:inline-block;padding:2px 9px;border-radius:11px;font-size:10.5px;font-weight:700;background:var(--gold-bg);color:var(--gold);border:1px solid #e6c200}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:14px 24px;background:var(--navy2)}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.card.pl{background:linear-gradient(135deg,rgba(184,134,11,.25),rgba(217,119,6,.12));border-color:rgba(217,119,6,.4)}
+.card-v{font-family:var(--mono);font-size:17px;font-weight:700;color:#fff;line-height:1}
+.card.pl .card-v{font-size:19px;color:#fcd34d}
+.card-l{font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;font-weight:500}
+.card.red .card-v{color:#f87171}.card.amber .card-v{color:#fbbf24}
+.ctrls{background:var(--card);border-bottom:1px solid var(--border);padding:11px 24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:0;z-index:60;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+select.sel,input.srch{font-family:var(--sans);font-size:12px;font-weight:500;border:1.5px solid var(--border);border-radius:7px;color:var(--text);background:#fff;height:34px;transition:border-color .15s}
+select.sel{padding:0 28px 0 10px;-webkit-appearance:none;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+select.sel:focus,input.srch:focus{outline:none;border-color:var(--blue)}
+input.srch{padding:0 10px 0 32px;width:210px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 10px center}
+.btn-csv{margin-left:auto;height:34px;padding:0 14px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-family:var(--sans);font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:background .15s}
+.btn-csv:hover{background:var(--blue)}
+.counter{padding:8px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11.5px;color:var(--muted);background:#f8fafc;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.pl-live{font-family:var(--mono);font-weight:700;color:var(--gold);font-size:13px}
+.twrap{overflow-x:auto;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1600px}
+thead th{background:var(--blue);color:#fff;padding:9px 8px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;transition:background .15s}
+thead th:hover{background:var(--navy2)}
+thead th .ar{opacity:.35;margin-left:3px;font-size:9px}
+thead th.asc .ar::after{content:"▲";opacity:1}thead th.desc .ar::after{content:"▼";opacity:1}thead th .ar::after{content:"⇅"}
+tbody tr{border-bottom:1px solid #eef2f6}
+tbody tr.r-v{background:var(--red-bg)}tbody tr.r-v:hover{background:#fde8e8}
+tbody tr.r-e{background:var(--amber-bg)}tbody tr.r-e:hover{background:#fef6e0}
+tbody tr.r-m:hover{background:#f8fafc}
+td{padding:7px 8px;vertical-align:middle;white-space:nowrap}
+.cm{font-family:var(--mono);font-size:11px}
+.cc{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.ca{font-family:var(--mono);font-weight:700;font-size:12px}
+.cr{font-family:var(--mono);font-weight:600}.cr.p{color:var(--green)}.cr.n{color:var(--red)}
+.rec{font-size:10px;font-weight:600;border-radius:4px;padding:2px 5px;display:inline-block;min-width:52px;text-align:center}
+.rv{background:#fee2e2;color:#991b1b}.rc{background:#dcfce7;color:#166534}.rn{background:#f1f5f9;color:#64748b}.rx{color:#cbd5e1;font-style:italic}
+.sb-wrap{display:flex;align-items:center;gap:5px}.sbs{display:flex;gap:2px}
+.sb{width:10px;height:10px;border-radius:2px;background:#e2e8f0}
+.sb.fv{background:var(--red)}.sb.fe{background:var(--amber)}.sb.fm{background:#94a3b8}
+.sn{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:600}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;white-space:nowrap}
+.bv{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.be{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.bm{background:#dcfce7;color:#166534;border:1px solid #86efac}
+.ab{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.am{font-size:10px;color:#94a3b8}
+.rvb{display:inline-block;padding:2px 6px;border-radius:10px;font-size:9px;font-weight:700;background:var(--gold-bg);color:var(--gold);border:1px solid #e6c200}
+.et{font-size:10px;font-weight:600;color:var(--steel);background:#eef2ff;border:1px solid #c7d2fe;border-radius:4px;padding:2px 6px;display:inline-block;margin:1px 0}
+.en{color:#cbd5e1}.ec{white-space:normal;min-width:150px;max-width:220px}
+.btn-a{padding:3px 9px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-family:var(--sans);font-size:10px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-a:hover{background:var(--steel)}
+.pag{display:flex;align-items:center;justify-content:center;gap:5px;padding:14px;flex-wrap:wrap}
+.pag button{min-width:32px;height:32px;padding:0 8px;border:1.5px solid var(--border);background:#fff;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text);cursor:pointer;transition:all .12s}
+.pag button:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+.pag button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pag button:disabled{opacity:.4;cursor:not-allowed}
+.pag .pi{font-size:11px;color:var(--muted);margin:0 6px}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
+.ov{position:fixed;inset:0;background:rgba(13,31,60,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.ov.show{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:pop .18s ease}
+@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.mhd{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:sticky;top:0;background:#fff;border-radius:14px 14px 0 0}
+.mhl{display:flex;flex-direction:column;gap:4px}
+.mtag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mttl{font-size:18px;font-weight:800;font-family:var(--mono)}
+.mcls{background:#f1f5f9;border:none;width:30px;height:30px;border-radius:7px;font-size:16px;cursor:pointer;color:var(--muted);flex-shrink:0}
+.mcls:hover{background:#e2e8f0}
+.mbdy{padding:18px 22px 24px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.mcell{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px 11px}
+.mcl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;margin-bottom:2px}
+.mcv{font-size:12.5px;font-weight:700;font-family:var(--mono)}
+.msc{margin-bottom:14px}
+.msh{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--steel);margin-bottom:6px}
+.scr{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-left:3px solid var(--steel);border-radius:0 8px 8px 0;padding:12px 14px;font-size:12px;line-height:1.6;color:#1e293b}
+.scr.sv{border-left-color:var(--red);background:linear-gradient(135deg,#fef2f2,#fee2e2)}
+.scr.se{border-left-color:var(--amber);background:linear-gradient(135deg,#fffbeb,#fef3c7)}
+.alrt{margin-top:10px;padding:9px 12px;border-radius:8px;font-size:11px;line-height:1.5;display:flex;gap:7px}
+.alrt.aa{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.alrt.ar{background:var(--gold-bg);border:1px solid #e6c200;color:#92700b}
+.si{background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:11px 13px;font-size:11.5px;line-height:1.5;color:#3730a3;margin-top:7px}
+.cn{margin-top:12px;font-size:10px;color:var(--muted);font-style:italic;line-height:1.5;border-top:1px dashed var(--border);padding-top:10px}
+@media(max-width:700px){.cards{grid-template-columns:repeat(3,1fr)}.mgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="hd-top">
+    <div>
+      <div class="hd-label">Renda Variável · Assessor · Maio 2026</div>
+      <div class="hd-h1">Painel <b>A23963</b> · SRP</div>
+    </div>
+    <div class="hd-right">
+      <span class="hd-filial">📍 SALVADOR</span>
+      
+    </div>
+  </div>
+</div>
+<div class="cards">
+  <div class="card pl"><span class="card-v" id="kpl">—</span><span class="card-l">PL Total Filtrado</span></div>
+  <div class="card red"><span class="card-v" id="kv">—</span><span class="card-l">🔴 Venda Direta</span></div>
+  <div class="card amber"><span class="card-v" id="ke">—</span><span class="card-l">🟡 Estruturado</span></div>
+  <div class="card"><span class="card-v" id="km">—</span><span class="card-l">🟢 Manter</span></div>
+  <div class="card"><span class="card-v" id="ka">—</span><span class="card-l">🤖 C/ Automatizada</span></div>
+</div>
+<div class="ctrls">
+  <select class="sel" id="ft">
+    <option value="">Tipo: Todos</option>
+    <option value="2">🔴 Venda Direta</option>
+    <option value="0">🟡 Estruturado</option>
+    <option value="1">🟢 Manter</option>
+  </select>
+  <select class="sel" id="fp">
+    <option value="">Produto: Todos</option>
+    <option value="0">Ação</option><option value="1">Fundo Imobiliário</option><option value="2">Opção</option><option value="3">Termo</option>
+  </select>
+  <select class="sel" id="fa">
+    <option value="">Filtro extra: Todos</option>
+    <option value="com">🤖 Com Automatizada</option>
+    <option value="sem">Sem Automatizada</option>
+    <option value="elv">Eleven: Venda</option>
+    <option value="lev">Levante: Venda</option>
+    <option value="bna">Benndorf: Não Atrativa</option>
+  </select>
+  <input class="srch" id="fs" placeholder="Buscar ativo ou cliente...">
+  <button class="btn-csv" onclick="expCSV()">⬇ Exportar CSV</button>
+</div>
+<div class="counter">
+  <span id="cnt">Carregando...</span>
+  <span>PL filtrado: <span class="pl-live" id="cpl">—</span></span>
+</div>
+<div class="twrap">
+  <table><thead><tr id="thr"></tr></thead><tbody id="tb"></tbody></table>
+  <div class="empty" id="em" style="display:none"><h3>Nenhum resultado</h3><p>Ajuste os filtros.</p></div>
+</div>
+<div class="pag" id="pag"></div>
+<div class="ov" id="ov" onclick="if(event.target===this)cM()"><div class="modal" id="mod"></div></div>
+<script>
+
+const LF=["ABC", "ALPHAVILLE", "ANAPOLIS", "ATIBAIA", "AURA", "BALNEARIO CAMBORIU", "BARRA DA TIJUCA", "BARRA MARAPENDI", "BELEM", "BENTO GONCALVES", "BOTAFOGO", "BRAGANCA PAULISTA", "BRASILIA", "BRUSQUE", "BX INVESTIMENTOS", "CABO FRIO", "CAMPINAS", "CAMPOLIM", "CAMPOS", "CAXIAS DO SUL", "CHARITAS", "CONDADO", "COSTA AZUL", "CURITIBA", "DINASTIA", "DIRETORIA COMERCIAL REGIONAL 1", "DIRETORIA COMERCIAL REGIONAL 2", "DIRETORIA COMERCIAL REGIONAL 3", "ESTANCIA", "FARIA LIMA", "FEIRA DE SANTANA", "FLORIANOPOLIS", "FORTALEZA", "GENESIS GRANJA VIANA", "GOIANIA", "GROWTH REGIONAL 1", "GROWTH REGIONAL 2", "GROWTH REGIONAL 3", "GUARUJA", "GUARULHOS", "HORUS INVEST", "ICARAI", "INDAIATUBA", "IPANEMA", "ITAPEVA", "JARDIM EUROPA", "JARDIM OCEANICO BARRA", "JARDIM PAULISTA", "JARDINS", "JUIZ DE FORA", "JUNDIAHY", "JURERE", "KHAIR", "LAJEADO", "LEBLON", "LES GARS", "LITORAL SP", "LONDRINA", "MANTO INVEST", "MARABA", "MASTER", "MATRIZ EAGLE ONE", "MATRIZ NO LIMITS", "MATRIZ RIO 1", "MINAS TRADE", "MOGI DAS CRUZES", "MOINHOS", "MONTES CLAROS", "NITEROI", "NORTE RIO", "NOVA IGUACU", "PALMAS", "PAULISTA PRIME", "PEDRA BRANCA", "PERUIBE", "PETROLINA", "PINHEIROS", "PIRACICABA", "PIRASSUNUNGA", "POA", "PONTA GROSSA", "PRAIA BRAVA", "PRAIA GRANDE", "QUANTOR INVEST", "RAJA", "RECREIO", "RIBEIRAO PRETO", "RIO", "RIO BARRA AMERICAS", "SALVADOR", "SANTO ANDRE", "SANTOS", "SANTOS DUMONT", "SAO JOSE DO RIO PRETO", "SAQUAREMA", "SAVASSI BH", "SAVASSI TERESINA", "SINOP", "SMART OFFICE REGIONAL 1", "SMART OFFICE REGIONAL 2", "SMART OFFICE REGIONAL 3", "SOROCABA", "SÃO JOSE DOS CAMPOS", "TAMBORE", "TIJUCA", "TRES INVEST", "UBA", "UBERLANDIA", "UNISUAM", "VILA IZABEL", "VILA VELHA", "VINHEDO", "VOLTA REDONDA", "XL CONSULTORIA"];
+const LX=["", "A1295", "A1333", "A1334", "A1435", "A1477", "A1490", "A1491", "A1496", "A1497", "A1545", "A1546", "A1557", "A1719", "A1901", "A1975", "A1978", "A1980", "A1985", "A20040", "A20062", "A20197", "A20267", "A20380", "A20400", "A20522", "A20535", "A20551", "A20580", "A20587", "A20604", "A20665", "A20667", "A20673", "A20695", "A20697", "A20709", "A20736", "A20749", "A20778", "A20800", "A20835", "A20869", "A20928", "A20944", "A21054", "A21095", "A21126", "A21192", "A21337", "A21338", "A21377", "A2139", "A21469", "A21478", "A21537", "A21560", "A21576", "A21581", "A21634", "A21636", "A21669", "A21677", "A21873", "A21944", "A21985", "A21996", "A22043", "A22125", "A22171", "A22244", "A22293", "A22312", "A22354", "A22404", "A22424", "A22458", "A22472", "A22504", "A22518", "A22553", "A22609", "A22610", "A22784", "A22796", "A22802", "A22819", "A2282", "A22834", "A22836", "A22837", "A22853", "A22984", "A23036", "A23043", "A23104", "A23108", "A23111", "A23127", "A23140", "A23207", "A23253", "A23270", "A23272", "A23312", "A23355", "A23494", "A23568", "A23588", "A23589", "A23610", "A23633", "A23737", "A23753", "A23963", "A23966", "A2400", "A24134", "A24149", "A24160", "A24169", "A24217", "A24253", "A24258", "A24309", "A24318", "A24378", "A24555", "A24576", "A24577", "A24581", "A24626", "A24646", "A24649", "A24679", "A24682", "A24692", "A24695", "A24720", "A24774", "A24884", "A24905", "A24937", "A24964", "A24990", "A25018", "A25027", "A25029", "A25039", "A25063", "A25109", "A25201", "A25314", "A25317", "A25337", "A25439", "A25451", "A25487", "A25580", "A25595", "A25617", "A25653", "A25748", "A25756", "A25766", "A25773", "A25789", "A25849", "A25858", "A25895", "A25896", "A25918", "A25937", "A25942", "A25987", "A25989", "A25997", "A26048", "A26054", "A26094", "A2613", "A26139", "A26141", "A26251", "A26262", "A26263", "A26268", "A26283", "A26284", "A26298", "A26313", "A26314", "A26429", "A26436", "A26456", "A26473", "A26589", "A26614", "A26634", "A26716", "A26732", "A26757", "A26881", "A26891", "A26898", "A26920", "A26966", "A26983", "A27000", "A27047", "A27137", "A27183", "A27195", "A27219", "A27225", "A27297", "A27377", "A27383", "A27402", "A27405", "A27409", "A27416", "A27423", "A2747", "A27483", "A27494", "A27509", "A27538", "A27573", "A27693", "A27767", "A27771", "A27905", "A27927", "A2798", "A28008", "A28009", "A28024", "A28046", "A28122", "A28168", "A28169", "A28195", "A28219", "A28251", "A28252", "A28291", "A28324", "A28606", "A28651", "A28705", "A2878", "A29005", "A29162", "A29246", "A29285", "A29292", "A2931", "A29446", "A29564", "A29683", "A29761", "A30318", "A30402", "A30403", "A30465", "A30604", "A30903", "A31005", "A31006", "A31017", "A31189", "A31244", "A31405", "A31723", "A31813", "A31902", "A31926", "A31927", "A31963", "A31988", "A31995", "A31996", "A32022", "A32083", "A32308", "A32341", "A32367", "A32403", "A32484", "A32626", "A32702", "A32722", "A32803", "A32804", "A32806", "A32865", "A32874", "A32952", "A32983", "A33007", "A33012", "A33061", "A33084", "A33107", "A33189", "A33254", "A33267", "A33272", "A33402", "A33446", "A33455", "A33474", "A33522", "A33562", "A33582", "A33594", "A33620", "A33646", "A33657", "A33664", "A33668", "A33682", "A33686", "A33689", "A33706", "A33712", "A33718", "A33745", "A33747", "A33804", "A33829", "A33838", "A33868", "A33870", "A33907", "A33912", "A33928", "A33947", "A33964", "A33988", "A34008", "A34010", "A34025", "A34045", "A34048", "A34098", "A34142", "A34184", "A34185", "A34210", "A34211", "A34229", "A34281", "A34286", "A34306", "A34387", "A34484", "A34525", "A34544", "A34605", "A34784", "A34823", "A34845", "A34944", "A35046", "A35061", "A35129", "A35323", "A35483", "A35603", "A35684", "A35701", "A35704", "A35723", "A35746", "A35769", "A35961", "A36044", "A36045", "A36065", "A36081", "A36168", "A36187", "A36189", "A36464", "A36664", "A36665", "A36744", "A36844", "A36963", "A37147", "A37244", "A37255", "A37269", "A37311", "A37316", "A37509", "A37581", "A37625", "A37634", "A37635", "A38084", "A38266", "A38413", "A38417", "A38418", "A38443", "A38489", "A38501", "A38534", "A38550", "A38630", "A38718", "A38781", "A38906", "A38925", "A38943", "A39075", "A39076", "A39089", "A39108", "A39135", "A39137", "A39153", "A39154", "A39275", "A39369", "A39376", "A39447", "A39491", "A39493", "A39592", "A39608", "A39651", "A39684", "A39686", "A39692", "A39727", "A39747", "A39843", "A39848", "A39853", "A39883", "A39901", "A39970", "A39971", "A39979", "A40055", "A40068", "A40076", "A40079", "A40204", "A40285", "A40288", "A40317", "A40333", "A40374", "A40388", "A40442", "A40462", "A40484", "A40503", "A40507", "A40508", "A40512", "A40524", "A40701", "A40703", "A40722", "A40774", "A40784", "A40851", "A40867", "A40903", "A40912", "A40945", "A41034", "A41066", "A41263", "A41306", "A41310", "A41325", "A41435", "A41444", "A41446", "A41452", "A41453", "A41456", "A41653", "A41657", "A41681", "A41739", "A41740", "A41789", "A41806", "A41845", "A42047", "A42049", "A42050", "A42051", "A42059", "A42123", "A42170", "A42180", "A42202", "A42212", "A42219", "A42224", "A42225", "A42227", "A42228", "A42284", "A42294", "A42308", "A42411", "A42422", "A42529", "A42685", "A42706", "A42710", "A42808", "A42809", "A42810", "A42818", "A42820", "A42829", "A42836", "A42841", "A42888", "A42902", "A42905", "A42906", "A42907", "A42910", "A42924", "A42927", "A43110", "A43214", "A43371", "A43644", "A43661", "A43672", "A43674", "A43676", "A43685", "A43689", "A43693", "A43710", "A43711", "A43725", "A43733", "A43738", "A43748", "A43756", "A43758", "A43861", "A43940", "A43956", "A43957", "A43965", "A43976", "A44006", "A44008", "A44063", "A44082", "A44129", "A44277", "A44282", "A44283", "A44293", "A44419", "A44436", "A44468", "A44511", "A44546", "A44547", "A44548", "A44552", "A44553", "A44557", "A44558", "A44577", "A44578", "A44588", "A44625", "A44646", "A44652", "A44653", "A44688", "A44716", "A44795", "A44796", "A44797", "A44878", "A44881", "A44895", "A44896", "A44897", "A44899", "A44902", "A44909", "A44912", "A44919", "A44921", "A44996", "A45050", "A45052", "A45055", "A45058", "A45186", "A45201", "A45208", "A45216", "A45239", "A45245", "A45251", "A45268", "A45288", "A45312", "A45322", "A45326", "A45327", "A45328", "A45329", "A45331", "A45348", "A45350", "A45362", "A45367", "A45376", "A45387", "A45390", "A45413", "A45418", "A45425", "A45437", "A45471", "A45475", "A45478", "A45487", "A45503", "A45519", "A45531", "A45533", "A45549", "A45572", "A45582", "A45630", "A45709", "A45710", "A45714", "A45850", "A45912", "A45917", "A45919", "A45920", "A45951", "A45970", "A45971", "A46015", "A46074", "A46087", "A46207", "A46333", "A46343", "A46529", "A46588", "A46636", "A46683", "A46753", "A46814", "A46847", "A46854", "A46899", "A46922", "A46990", "A47031", "A47182", "A47260", "A47261", "A47471", "A47491", "A47494", "A47713", "A47714", "A47729", "A47829", "A47888", "A47956", "A47969", "A47971", "A48106", "A48367", "A48413", "A48712", "A48739", "A49051", "A49052", "A49053", "A49110", "A49111", "A49112", "A49200", "A49670", "A49674", "A49908", "A49946", "A50191", "A50376", "A50377", "A50378", "A50433", "A50489", "A50494", "A50527", "A50665", "A50737", "A50764", "A50765", "A50826", "A50828", "A50840", "A50847", "A50848", "A50849", "A50895", "A50917", "A50932", "A50951", "A50952", "A50959", "A50963", "A50997", "A51093", "A51094", "A51131", "A51133", "A51157", "A51158", "A51228", "A51275", "A51276", "A51287", "A51290", "A51291", "A51428", "A51449", "A51533", "A51534", "A51732", "A51832", "A51917", "A51954", "A52127", "A52172", "A52508", "A52830", "A52834", "A52853", "A52854", "A52987", "A52988", "A53046", "A53229", "A53246", "A53250", "A53409", "A53448", "A53746", "A53747", "A53814", "A53815", "A53832", "A53833", "A53951", "A53953", "A54113", "A54139", "A54140", "A54152", "A54227", "A54233", "A54454", "A54500", "A54508", "A54534", "A54580", "A54620", "A54748", "A54751", "A55146", "A55227", "A55269", "A55271", "A55707", "A55773", "A55826", "A55827", "A55870", "A55874", "A55912", "A55966", "A55989", "A55990", "A56057", "A56132", "A56532", "A56652", "A56654", "A57318", "A57367", "A57368", "A57369", "A57391", "A57554", "A57941", "A57988", "A57989", "A58022", "A58026", "A58232", "A58362", "A58746", "A58790", "A58847", "A58848", "A59086", "A59206", "A59363", "A59489", "A59516", "A59771", "A59934", "A61894", "A61899", "A61912", "A61928", "A61941", "A61942", "A61955", "A61987", "A62004", "A62011", "A65262", "A65329", "A65533", "A65569", "A65647", "A65701", "A65769", "A65887", "A65974", "A66110", "A66914", "A66932", "A66976", "A67031", "A67050", "A67076", "A67080", "A67139", "A67257", "A67299", "A67345", "A67385", "A67444", "A67467", "A67610", "A67646", "A67672", "A67736", "A67739", "A67770", "A67797", "A67822", "A67849", "A67871", "A67912", "A67915", "A67949", "A68018", "A68043", "A68089", "A68144", "A68162", "A68165", "A68309", "A68333", "A68335", "A68397", "A68550", "A68596", "A68622", "A68630", "A68631", "A68691", "A68696", "A68700", "A68720", "A68801", "A68838", "A68847", "A68874", "A68895", "A68898", "A68908", "A68926", "A68933", "A68969", "A68995", "A69037", "A69090", "A69106", "A69189", "A69396", "A69506", "A69525", "A69534", "A69535", "A69537", "A69538", "A69540", "A69553", "A69562", "A69574", "A69648", "A69715", "A69768", "A69807", "A69857", "A69981", "A70016", "A70074", "A70097", "A70184", "A70210", "A70250", "A70317", "A70413", "A70422", "A70570", "A70622", "A70623", "A70645", "A70726", "A70755", "A70758", "A70778", "A70794", "A70840", "A70891", "A70908", "A70924", "A70988", "A70989", "A71020", "A71021", "A71044", "A71083", "A71109", "A71116", "A71139", "A71179", "A71197", "A71198", "A71210", "A71241", "A71278", "A71281", "A71285", "A71290", "A71295", "A71297", "A71334", "A71339", "A71343", "A71347", "A71360", "A71399", "A71402", "A71456", "A71471", "A71506", "A71562", "A71584", "A71608", "A71648", "A71654", "A71675", "A71699", "A71707", "A71716", "A71756", "A71758", "A71781", "A71833", "A71860", "A71922", "A71994", "A71995", "A72130", "A72176", "A72239", "A72280", "A72299", "A72346", "A72378", "A72410", "A72411", "A72440", "A72462", "A72494", "A72566", "A72587", "A72595", "A72643", "A72671", "A72678", "A72702", "A72719", "A72796", "A72835", "A72896", "A72899", "A72901", "A72972", "A73076", "A73098", "A73156", "A73182", "A73235", "A73261", "A73264", "A73279", "A73284", "A73312", "A73349", "A73459", "A73477", "A73481", "A73482", "A73537", "A73654", "A73686", "A73712", "A73784", "A73812", "A73815", "A73875", "A73926", "A73989", "A74000", "A74065", "A74080", "A74151", "A74156", "A74157", "A74158", "A74212", "A74222", "A74254", "A74283", "A74302", "A74311", "A74321", "A74357", "A74363", "A74364", "A74370", "A74403", "A74443", "A74457", "A74524", "A74533", "A74544", "A74545", "A74560", "A74578", "A74590", "A74612", "A74640", "A74645", "A74671", "A74679", "A74693", "A74694", "A74697", "A74746", "A74836", "A74996", "A75010", "A75044", "A82901", "A87490", "A87546", "A87548", "A87566", "A87646", "A87706", "A87713", "A87715", "A87746", "A87768", "A87968", "A88006", "A88026", "A88433", "A89450", "A90112", "A90144", "A90266", "A90268", "A90349", "A90428", "A90528", "A90567", "A90822", "A90838", "A90868", "A90957", "A90962", "A91115", "A91135", "A91163", "A91320", "A91460", "A91519", "A91604", "A91605", "A91623", "A91653", "A91917", "A92001", "A92153", "A92188", "A92255", "A92355", "A92416", "A92434", "A92581", "A92600", "A92815", "A92837", "A93161", "A93673", "A93693", "A94199", "A94365", "A94367", "A94398", "A95105", "A95137", "A95357", "A95445", "A95446", "A95465", "A95486", "A95496", "A95510", "A95574", "A95589", "A95613", "A95667", "A95683", "A95704", "A95706", "A95724", "A95741", "A95777", "A95782", "A95855", "A96007", "A96008", "A96063", "A96206", "A96221", "A96376", "A96398", "A96406", "A96456", "A96550", "A96649", "A96650", "A96671", "A96674", "A96698", "A96730", "A96731", "A96732", "A96733", "A96784", "A96792", "A96796", "A96899", "A96981", "A97039", "A97043", "A97045", "A97068", "A97072", "A97083", "A97127", "A97264", "A97361", "A97463", "A97498", "A97506", "A97508", "A97528", "A97550", "A97551", "A97624", "A97645", "A97739", "A97796", "A97821", "A97824", "A97858", "A97921", "A97945", "A97976", "A98055", "A98124", "A98127", "A98156", "A98182", "A98183", "A98196", "A98234", "A98283", "A98329", "A98365", "A98390", "A98423", "A98539", "A98594", "A98603", "A98639", "A98657", "A98660", "A98672", "A98674", "A98709", "A98711", "A98729", "A98737", "A98738", "A98756", "A98765", "A98810", "A98815", "A98817", "A98836", "A98858", "A98862", "A98890", "A98932", "A98933", "A98935", "A98942", "A99177", "A99224", "A99260", "A99267", "A99374", "A99388", "A99391", "A99397", "A99485", "A99630", "A99652", "A99853", "A99901", "A99970"];
+const LA=["AAF", "AAG", "AB", "ABAA", "ABAN", "ABASAB", "ABBG", "ABBP", "ABCAL", "ABCMG", "ABCMR", "ABCRM", "ABDV", "ABEM", "ABG", "ABJS", "ABLP", "ABML", "ABS", "ABWS", "ACF", "ACG", "ACM", "ACP", "ACRM", "ADG", "ADPP", "AFMO", "AFO", "AGB", "AGL", "AIA", "AJO", "AK", "ALAM", "ALDG", "ALO", "ALPS", "ALRS", "ALSA", "ALW", "ALZN", "AMP", "ANBV", "ANM", "ANPG", "ANPR", "ANRL", "ANS", "APD", "AR", "ARL", "ARM", "ARO", "ARP", "ARS", "ARSR", "ASLC", "ASM", "ASVO", "ASWH", "ATAABS", "ATAJ", "ATALA", "ATAMF", "ATBR", "ATDB", "ATDG", "ATDSS", "ATEF", "ATEO", "ATFF", "ATFN", "ATGG", "ATGR", "ATGRS", "ATHB", "ATICK", "ATIFA", "ATIFF", "ATIMI", "ATIMS", "ATIRG", "ATIWS", "ATJB", "ATJD", "ATJJ", "ATJL", "ATJR", "ATJV", "ATKR", "ATKW", "ATLC", "ATLE", "ATLHM", "ATLV", "ATMM", "ATMT", "ATNJ", "ATPA", "ATPS", "ATRMSM", "ATS", "ATSD", "ATSLC", "ATTS", "ATVA", "ATVICS", "ATVP", "ATVS", "ATYR", "AUMR", "AVA", "AVDS", "BA", "BAP", "BARAM", "BARANS", "BARDB", "BARGM", "BARMLS", "BARPMPAR", "BARTL", "BARUEM", "BCAC", "BCB", "BCMS", "BCTA", "BEC", "BEFL", "BEFS", "BEGP", "BEJF", "BELS", "BEMA", "BEMALF", "BEMD", "BEMF", "BEPB", "BEVH", "BEYN", "BFTR", "BGRA", "BGVM", "BHHR", "BHIN", "BHJVN", "BHPV", "BHRN", "BLT", "BM", "BMA", "BMCB", "BMD", "BMEB", "BMFL", "BMFN", "BMGB", "BMMB", "BMMC", "BMS", "BOEC", "BOLM", "BOTAF", "BOTEL", "BOTLF", "BOTLP", "BOTVM", "BPD", "BPFM", "BPGP", "BPRR", "BRAA", "BRAAA", "BRAAB", "BRAAC", "BRAACS", "BRAAF", "BRAAL", "BRAAM", "BRAAN", "BRACD", "BRACDAJ", "BRACF", "BRAFM", "BRAGC", "BRAGCML", "BRAGG", "BRAGR", "BRAGS", "BRAIF", "BRAIS", "BRAJC", "BRALS", "BRAMD", "BRAMF", "BRAMG", "BRAMIF", "BRAMO", "BRAMV", "BRAN", "BRANA", "BRAPL", "BRARO", "BRARR", "BRARS", "BRASB", "BRASV", "BRAV", "BRAWJ", "BRBL", "BRCE", "BRCG", "BRDF", "BREB", "BREM", "BRGK", "BRGM", "BRJC", "BRJK", "BRMA", "BRMC", "BRPF", "BRST", "BRY", "BRYB", "BSCW", "BSIB", "BSIT", "BSJM", "BSLC", "BSTC", "BT", "CAAC", "CAB", "CABB", "CADA", "CAEF", "CAEP", "CAF", "CAFR", "CAMQ", "CAMT", "CAO", "CAOP", "CAPO", "CAPRI", "CARLB", "CASB", "CAWT", "CBS", "CCAC", "CCHI", "CCR", "CEDS", "CELCC", "CES", "CESA", "CESAR", "CESS", "CEVS", "CFBN", "CFCM", "CFEJ", "CFI", "CFM", "CFT", "CFTV", "CGBVF", "CGQ", "CGT", "CHAAB", "CHACO", "CHADS", "CHAFB", "CHALD", "CHAMT", "CHAPO", "CHAVL", "CHC", "CITAAP", "CITAFN", "CL", "CLB", "CLEBS", "CLH", "CLPI", "CLS", "CMA", "CNA", "CONGF", "COPGV", "CPL", "CR", "CRA", "CRAB", "CRDF", "CRM", "CRR", "CRRC", "CRSL", "CSA", "CTDM", "CTHS", "CTM", "CTO", "CTX", "CUBR", "CUDD", "CUFH", "CUFM", "CUGF", "CUIC", "CUJB", "CUJC", "CUMB", "CVL", "DB", "DBCK", "DCB", "DCCA", "DCM", "DCR", "DEL", "DFM", "DIFE", "DILAS", "DIPF", "DJSF", "DJSO", "DNSA", "DOA", "DPA", "DPN", "DPU", "DQS", "DRC", "DRM", "DRS", "DRVA", "DS", "DTP", "DTS", "DUS", "DVCM", "EAN", "EARLE", "EAS", "EBH", "EC", "ECJ", "EDA", "EDAS", "EDGS", "EDMS", "EDU", "EDUC", "EDUS", "EFFS", "EFLH", "EKP", "EMS", "ERS", "ESCT", "ESDO", "ESTFR", "ESTGT", "ESTIM", "ESTRA", "ESTTV", "ESWT", "ETVT", "EVB", "EVD", "EXAA", "EXAAN", "EXAJM", "EXAR", "EXBRY", "EXCR", "EXEM", "EXKB", "EXMK", "EXNA", "EXRA", "EXSA", "EXTL", "EXVM", "FABL", "FABNP", "FARN", "FAZ", "FBTT", "FCB", "FCG", "FCUM", "FD", "FEMS", "FGG", "FGO", "FGPS", "FHCN", "FLAB", "FLAG", "FLAM", "FLAN", "FLANP", "FLAO", "FLEJ", "FLEP", "FLF", "FLFM", "FLGL", "FLLC", "FLLR", "FLLTD", "FLMA", "FLMD", "FLMM", "FLN", "FLNK", "FLO", "FLOM", "FLPM", "FLPP", "FLRC", "FLRF", "FLRG", "FLRR", "FLSV", "FLV", "FLVS", "FLWS", "FN", "FNT", "FORAC", "FORJAP", "FORLA", "FORTC", "FPB", "FR", "FRC", "FRNC", "FSA", "FSCM", "FSEE", "FSLF", "FSPE", "GAOM", "GASC", "GASOSA", "GBL", "GBM", "GBN", "GBNU", "GBRR", "GBU", "GCO", "GFB", "GFE", "GG", "GGM", "GGOS", "GGRS", "GHS", "GISA", "GIULI", "GIUMA", "GJG", "GJMP", "GJMS", "GMO", "GMPRP", "GMT", "GO", "GOAJ", "GOAP", "GOBG", "GOBM", "GOCC", "GOCV", "GODC", "GODE", "GODM", "GODN", "GODV", "GOEC", "GOED", "GOEH", "GOFLC", "GOGBM", "GOGD", "GOGM", "GOGS", "GOHR", "GOLEC", "GOLL", "GOMG", "GONT", "GOPC", "GOPG", "GORA", "GORL", "GORM", "GORR", "GORRM", "GORS", "GOUF", "GPDL", "GRCB", "GRDL", "GREC", "GRMG", "GRNS", "GRPS", "GRRCM", "GRS", "GRVP", "GS", "GSCA", "GST", "GUBR", "GUIB", "GUIF", "GURL", "GUS", "GUVA", "GX", "HBL", "HEA", "HEP", "HERCIO", "HESB", "HFF", "HFR", "HIDO", "HIIT", "HLC", "HMO", "HMT", "HOAC", "HOBB", "HOD", "HOJS", "HP", "HUAL", "HVF", "HYGLM", "IAP", "IBO", "IBOJ", "ICB", "ICR", "IGA", "IGB", "IHNB", "IIV", "IJM", "ILG", "ILJ", "ILLP", "ILS", "IMA", "IMCS", "IMR", "INTI", "IPDC", "IPDL", "IPFS", "IPJA", "IPLC", "IPMF", "IPU", "IRAWR", "ISA", "ISF", "ISG", "ITA", "ITACL", "ITAFG", "ITALF", "ITASC", "ITATA", "JAC", "JAIRSA", "JAM", "JAP", "JARDO", "JARED", "JARFW", "JARFY", "JARJC", "JARLC", "JARMA", "JARMAM", "JARMM", "JARRM", "JARVM", "JAS", "JAVI", "JB", "JBC", "JBTT", "JCPJ", "JCRR", "JDB", "JDSV", "JEFA", "JEMS", "JEN", "JFAR", "JFAU", "JFBN", "JFBR", "JFDA", "JFFF", "JFFH", "JFFL", "JFFM", "JFGA", "JFGM", "JFGV", "JFJM", "JFKT", "JFLI", "JFMS", "JFNM", "JFRA", "JFRD", "JFRS", "JFSC", "JFTM", "JFTP", "JFVM", "JFWF", "JGM", "JGMF", "JGPA", "JHPF", "JHSV", "JJ", "JJV", "JLMS", "JLV", "JMJ", "JOA", "JOBRP", "JOBTP", "JOBVM", "JOBWS", "JOPENE", "JOPMS", "JOV", "JOVR", "JPC", "JPDS", "JPI", "JPLM", "JPM", "JPNS", "JPSC", "JRDA", "JRSB", "JSCN", "JSR", "JUCH", "JUR", "JURFA", "JURFR", "JURKP", "JURML", "JVFOJ", "JVFT", "JVPM", "JZP", "KACC", "KDCF", "KFT", "KHMM", "KHPD", "KHPS", "LA", "LABC", "LAD", "LAE", "LAJID", "LAJLD", "LAJVS", "LBOS", "LBRT", "LBV", "LC", "LCAC", "LD", "LDCH", "LDS", "LECG", "LECL", "LEDBB", "LEF", "LEGB", "LEIB", "LEIS", "LEM", "LEMP", "LEPC", "LFCA", "LFK", "LFM", "LHA", "LHPS", "LIAP", "LITAMSM", "LITAS", "LITDPG", "LITGH", "LITRL", "LITVO", "LK", "LLF", "LLP", "LLT", "LM", "LMQ", "LMZ", "LNBR", "LODS", "LOFI", "LOPM", "LRO", "LSF", "LSO", "LST", "LTC", "LTM", "LUCS", "LUME", "LUSA", "LUW", "LZO", "MA", "MAG", "MAH", "MALR", "MAM", "MAN", "MAO", "MAOS", "MAPE", "MARCH", "MARMA", "MARON", "MARRL", "MAS", "MASC", "MASIS", "MCDQ", "MCEC", "MCFS", "MCGB", "MCMB", "MCRC", "MCSR", "MCSS", "MDSO", "MFD", "MHJ", "MIL", "MJA", "MLN", "MMD", "MMH", "MMV", "MNM", "MOAJ", "MOAS", "MOCACR", "MOCBN", "MOCCP", "MOCFG", "MOCGG", "MOCHE", "MOCLR", "MOCTC", "MOD", "MOGT", "MOMR", "MOND", "MORF", "MOVGP", "MP", "MRF", "MROGC", "MRP", "MRRO", "MSF", "MSL", "MST", "MTBC", "MTCC", "MTCM", "MTDF", "MTFL", "MTIM", "MTL", "MTLM", "MTPP", "MTRAG", "MTRDB", "MTRFC", "MTRFL", "MTRJS", "MTRMM", "MTRPB", "MTRS", "MTRSS", "MTRT", "MTRV", "MTTX", "MTVM", "MZLL", "NIAL", "NIAM", "NIAP", "NIAPR", "NICB", "NICF", "NICM", "NICO", "NIDA", "NIDP", "NIGM", "NIGS", "NIJC", "NILC", "NILO", "NIMC", "NIPA", "NIPR", "NITS", "NITV", "NIVS", "NIWA", "NIWC", "NMOV", "NRHG", "NRLG", "NRPA", "NSA", "NTB", "PA", "PACA", "PAM", "PAMV", "PASA", "PBABC", "PBAC", "PBLG", "PBME", "PBN", "PBRA", "PBRB", "PBTC", "PCA", "PDF", "PDSS", "PEG", "PFC", "PGAD", "PGANR", "PGDC", "PGEB", "PGESB", "PGFN", "PGGB", "PGGF", "PGGZ", "PGHS", "PGJM", "PGJS", "PGKC", "PGLY", "PGMS", "PGO", "PGPR", "PGRB", "PGRD", "PGRM", "PHDF", "PHGC", "PHL", "PHMV", "PHTS", "PIBC", "PIBP", "PIFM", "PIGV", "PIHM", "PIMB", "PIPG", "PJU", "PK", "PKO", "PLA", "PLAAP", "PLBR", "PLMN", "PMAF", "PMF", "PNB", "POAABE", "POAAS", "POADE", "POAEP", "POAES", "POAFF", "POAFM", "POAGL", "POAJC", "POALB", "POALI", "POALUG", "POAMO", "POARF", "POARP", "POASR", "POATG", "PPA", "PPAK", "PPCG", "PPCS", "PPDS", "PPFK", "PPFM", "PPR", "PRBG", "PRC", "PRDZ", "PRIA", "PRLS", "PRMM", "PRMO", "PRP", "PSG", "PSMA", "PSNT", "PTSA", "PUBM", "RA", "RAM", "RB", "RBAS", "RBDR", "RBFH", "RBGA", "RBGD", "RBIB", "RBM", "RBMM", "RBV", "RBWA", "RCB", "RCM", "RCR", "RDA", "RENF", "REP", "RES", "RFM", "RFS", "RG", "RGC", "RGL", "RGS", "RHRS", "RIV", "RLSS", "RMF", "RMGB", "RMO", "RMR", "RNT", "ROC", "ROL", "ROM", "ROMO", "RON", "RORS", "RPA", "RPAC", "RPAG", "RPAU", "RPBG", "RPCM", "RPDL", "RPDR", "RPE", "RPFS", "RPGO", "RPGS", "RPHD", "RPLA", "RPLC", "RPLH", "RPLM", "RPML", "RPMP", "RPRD", "RPTS", "RSDS", "RSGM", "RSLCM", "RSLQ", "RSR", "RSRB", "RSTC", "RSVC", "RTR", "RVG", "SACD", "SACS", "SAFM", "SAG", "SAGN", "SAJS", "SALB", "SALR", "SAOX", "SAPM", "SAPS", "SARM", "SARN", "SARR", "SASS", "SAVB", "SAWR", "SBPMCC", "SCB", "SCFM", "SCT", "SDRD", "SEM", "SF", "SFR", "SIBR", "SICM", "SIEM", "SIFR", "SIMR", "SJAK", "SJCA", "SJCB", "SJCRD", "SJCRM", "SJFP", "SJGC", "SJJT", "SJLK", "SJM", "SJMT", "SJPL", "SJRB", "SJRM", "SMB", "SMC", "SMD", "SMF", "SMJ", "SPAR", "SPBF", "SPCMC", "SPCMF", "SPCV", "SPDM", "SPEP", "SPFA", "SPFP", "SPGC", "SPGG", "SPHS", "SPJD", "SPKG", "SPKP", "SPLB", "SPLC", "SPLJ", "SPLN", "SPLT", "SPLU", "SPMA", "SPMEC", "SPMMR", "SPPB", "SPPFF", "SPRA", "SPRGS", "SPROM", "SPRR", "SPS", "SPTM", "SPVC", "SPWS", "SQJF", "SR", "SRHM", "SRM", "SRP", "STAT", "STAZ", "STCM", "STCS", "STDC", "STDFM", "STFG", "STGN", "STGS", "STID", "STIH", "STJC", "STJF", "STJL", "STKS", "STLF", "STLH", "STLP", "STMM", "STMS", "STRA", "STRG", "STRP", "STS", "STSV", "STTK", "STTR", "STWS", "SVLDB", "SYMA", "SYR", "TCP", "TEBA", "TECH", "TEEF", "TEJA", "TEREFD", "THFS", "THO", "THSE", "TIAD", "TIBC", "TIBL", "TIES", "TIFR", "TIFRD", "TIFS", "TIFV", "TIIZA", "TIJGC", "TIJR", "TIKR", "TILAU", "TILV", "TIMP", "TIRL", "TIRP", "TITS", "TJEC", "TJGL", "TM", "TME", "TMF", "TML", "TMMB", "TP", "TPFB", "TQMD", "TYB", "UAH", "UAN", "UBGC", "UBLP", "UBVA", "UFSM", "UJO", "UJT", "ULA", "ULG", "UMN", "UTU", "UVA", "UVC", "UVG", "VALO", "VAZ", "VCB", "VCGB", "VCGM", "VCHC", "VCKS", "VCRS", "VCS", "VCVS", "VCWD", "VCWG", "VDABT", "VDAW", "VHC", "VHL", "VIAC", "VICA", "VIDG", "VIDM", "VINL", "VMF", "VNBS", "VPC", "VRCCF", "VRDS", "VRFB", "VRHF", "VRJC", "VRLC", "VRMF", "VRMR", "VRNS", "VSA", "VVAA", "VVAD", "VVAM", "VVAP", "VVAT", "VVCB", "VVCD", "VVCF", "VVDC", "VVDM", "VVDP", "VVDS", "VVEBB", "VVGL", "VVGP", "VVGR", "VVHF", "VVJC", "VVLL", "VVLOR", "VVLS", "VVLSS", "VVRB", "VVVM", "VVWR", "VXM", "VYH", "VYR", "VYS", "VZJS", "VZPP", "WAS", "WCR", "WFS", "WLLA", "WMSJ", "WNG", "WNT", "WVP", "YGN", "ZSAC", "ZSAF", "ZSBS", "ZSCB", "ZSDB", "ZSEM", "ZSHM", "ZSLC", "ZSPS", "ZSRL", "ZSRP", "ZSRR", "ZSTB"];
+const LP=["Ação", "Fundo Imobiliário", "Opção", "Termo"];
+const LT=["ESTRUTURADO", "MANTER", "VENDA"];
+const LAU=["", "Absolute 15", "Absolute 30", "Access Pro", "BDR", "Benndorf Dividendos", "Benndorf FIIs Renda", "Benndorf FIIs Valorização", "Benndorf | FI-Infra", "Benndorf+ Tática", "Best Ações", "Bunker", "Carteira Alpha – Fundos Imobiliários", "Carteira Dividendos", "Carteira Dividendos Lumi", "Carteira Exclusiva de Ações", "Carteira Global ETFs", "Carteira Monaco Yield", "Carteira Quant: Renda de FIIs", "Carteira Real Estate", "Carteira Recomendada de FIIs", "Carteira Recomendada de FIIs Rico", "Carteira Recomendada de Fiis Alternativa", "Carteira Renda+ Dividendos", "Carteira SEVEN", "Carteira de Dividendos", "Carteira de Fundos Listados Renda Total", "DV Multi Estratégia", "Dividendos", "Dividendos Gráfica", "ESG XP", "Eleven | Carteira FII Ganho de Capital", "Eleven | Carteira FII Renda", "Equilibrium Renda Imobiliária", "FIIs Yield Pro", "Factor Ações", "Fundos Imobiliários - Ganho de Capital", "Fundos Listados Wisir W", "Global Investo ETFs", "Hub Dividendos", "Hub Renda Imobiliária", "Hub de Renda", "Investo ETFs Renda Fixa", "Levante Ações High Alpha", "Lumi FII 1", "Max Dividendos", "Mensal Gráfica Arena", "Mensal de Ações", "Mensal de BDRs", "Mensal de Small Caps", "Mix Global", "Perspectiva", "Portfólio Melhores Fundos Imobiliários", "Quant Investing", "Renda 30", "Renda Sólida", "Renda Valor – FIIs", "Small Caps", "Top 10 Ações", "Top 10 Ações Internacionais", "Top Ações", "Top Dividendos", "Top Dividendos II", "Top Dividendos Plus", "Top Pick", "Top Small Caps", "Valor e Renda", "Wisir Dividendos", "Wisir Renda Passiva", "[DESATIVADA] Carteira de FIIs – Renda Recorrente"];
+const LB=["Atrativa", "Neutra", "Não Atrativa", "Sem Cobertura", "Sob revisão"];
+const LE=["Compra", "Neutra", "Sem Cobertura", "Sob Revisão", "Venda"];
+const LL=["Compra", "EM REVISÃO", "Neutro", "SOB REVISÃO", "Sem Cobertura", "Venda"];
+const LXP=["Compra", "Neutro", "Sem Cobertura", "Sem Cobertura Research XP", "Sob Revisão"];
+const LES=["Alocação Protegida", "Collar", "Collar (setorial)", "Collar UI · Collar", "Collar UI · Collar · Fence", "Collar UI · DOC Bidirecional · Call UO com Rebate", "Collar UI · DOC Bidirecional · Fence UI · Call UO com Rebate", "Collar UI · POP · Smart Coupon · DOC Bidirecional · Fence UI · Call UO com Rebate", "Collar UI · Put Spread", "Collar UI · Smart Coupon · DOC Bidirecional · Call UO com Rebate", "Fence", "Fence UI", "Fence UI · Smart Coupon", "POP", "Put Spread", "Smart Coupon", "—"];
+const DATA=[[89,114,1106,"4955402","VIVT3",0,61.15,22.07,35.57,28456.0,29.96,118.7,1,2,0,0,2,2,0,0,0,0,2],[89,114,1106,"4123405","BBDC4",0,-24.69,23.44,17.65,25240.0,15.31,115.3,1,4,0,1,2,0,0,0,0,0,1],[89,114,1106,"4955402","CPLE3",0,112.58,6.85,14.56,33488.0,null,null,3,2,4,2,1,0,0,0,0,0,2],[89,114,1106,"4955402","BOVA11",0,42.01,122.38,173.79,20855.0,null,null,3,2,4,2,1,0,0,0,0,0,2],[89,114,1106,"4955402","BBSE3",0,42.67,23.85,34.03,20418.0,42.46,80.1,0,2,2,3,1,0,0,0,0,0,2],[89,114,1106,"4955402","ALUP11",0,35.62,24.25,32.89,14636.0,35.13,93.6,0,0,2,1,1,0,0,0,0,0,2],[89,114,1106,"4955402","B3SA3",0,-0.27,16.69,16.64,11648.0,14.37,115.8,1,2,2,1,1,0,0,0,0,0,11],[89,114,1106,"3110035","B3SA3",0,-14.81,19.53,16.64,4992.0,14.37,115.8,1,2,2,1,1,0,0,0,0,0,11],[89,114,1106,"4955402","GOLD11",0,142.08,10.07,24.39,4878.0,null,null,3,2,4,2,1,0,0,0,0,0,2],[89,114,1106,"3110035","BBAS3",0,21.87,17.04,20.76,4152.0,34.66,59.9,0,0,0,0,1,0,0,0,0,0,2],[89,114,1106,"18848479","B3SA3",0,-3.2,17.19,16.64,2579.0,14.37,115.8,1,2,2,1,1,0,0,0,0,0,11],[89,114,1106,"4955402","ACWI11",0,34.88,12.14,16.37,1817.0,null,null,3,2,4,2,1,0,0,0,0,0,0],[89,114,1106,"4955402","KNRI11",1,9.06,146.71,160.0,24480.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","HGRU11",1,4.0,122.6,127.51,23844.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","XPML11",1,4.9,102.19,107.19,23582.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","MCCI11",1,-7.51,102.36,94.67,22815.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","BTLG11",1,-4.71,107.88,102.8,22719.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","HGLG11",1,-8.48,169.21,154.85,22453.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","XPLG11",1,-11.46,111.59,98.8,22329.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"2305338","BBSE3",0,-3.31,35.2,34.03,20418.0,42.46,80.1,0,2,2,3,0,1,0,0,0,0,2],[89,114,1106,"4955402","VGIP11",1,-12.37,90.65,79.43,19699.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","TRXF11",1,-13.36,105.22,91.17,18963.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","VRTA11",1,-29.86,108.63,76.19,18438.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","EGIE3",0,8.92,30.16,32.85,18396.0,40.73,80.7,1,1,2,1,0,1,0,0,0,0,2],[89,114,1106,"4955402","MXRF11",1,-5.16,10.33,9.8,18130.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"4955402","HGRE11",1,-6.31,136.28,127.68,15577.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"3965843","BRAV3",0,-27.6,24.75,17.92,8960.0,28.38,63.1,0,2,0,0,0,1,0,0,0,0,2],[89,114,1106,"3339371","RAIZ4",0,null,0.0,0.46,7152.0,3.41,13.5,0,2,0,0,0,1,0,0,0,0,2],[89,114,1106,"4955402","VINO11",1,-59.71,12.26,4.94,4199.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"3965843","MGLU3",0,-70.16,23.33,6.96,3550.0,9.96,69.9,2,3,2,1,0,1,0,0,0,0,2],[89,114,1106,"18848479","SAUD3",0,6.31,13.07,13.9,2752.0,null,null,3,2,4,2,0,1,0,0,0,0,2],[89,114,1106,"18848479","CPLE3",0,5.65,13.78,14.56,2111.0,null,null,3,2,4,2,0,1,0,0,0,0,2],[89,114,1106,"18848479","EZTC3",0,-11.93,14.79,13.03,1876.0,16.9,77.1,3,1,4,1,0,1,0,0,0,0,2],[89,114,1106,"18848479","BBDC3",0,-7.51,16.65,15.4,1617.0,null,null,3,2,4,3,0,1,0,0,0,0,2],[89,114,1106,"3110035","HBOR3",0,-85.19,14.65,2.17,434.0,null,null,3,2,4,2,0,1,0,0,0,0,2],[89,114,1106,"3965843","CSANF650",2,null,null,0.01,13.0,null,null,3,2,4,2,0,1,0,0,0,0,16],[89,114,1106,"3965843","MGLUE129",2,null,null,0.01,10.0,null,null,3,2,4,2,0,1,0,0,0,0,16]];
+
+
+const ENCARTE={"BOVX11": {"prod": "Collar UI", "prot": 100, "ganho": 32, "barreira": 47, "prazo": 24, "fee": 2.5}, "SMAL11": {"prod": "Collar", "prot": 100, "ganho": 40, "barreira": null, "prazo": 24, "fee": 2.22}, "ITUB4": {"prod": "Collar UI", "prot": 100, "ganho": 30, "barreira": 30, "prazo": 12, "fee": 1.8}, "ROXO34": {"prod": "Collar UI", "prot": 90, "ganho": 54.5, "barreira": 54.5, "prazo": 12, "fee": 2.5}, "CYRE3": {"prod": "Collar UI", "prot": 90, "ganho": 57, "barreira": 57, "prazo": 12, "fee": 2.5}, "EMBJ3": {"prod": "Collar UI", "prot": 90, "ganho": 53, "barreira": 53, "prazo": 12, "fee": 2.5}, "NIKE34": {"prod": "Collar UI", "prot": 90, "ganho": 32.3, "barreira": 32.3, "prazo": 12, "fee": 2.5}, "BBDC4": {"prod": "Collar", "prot": 98, "ganho": 8, "barreira": null, "prazo": 4, "fee": 0.48}, "VALE3": {"prod": "Collar", "prot": 98, "ganho": 8, "barreira": null, "prazo": 4, "fee": 0.5}, "IGTI11": {"prod": "Smart Coupon", "prot": null, "ganho": 7.5, "barreira": 13, "prazo": 4, "fee": 0.83, "cupom": 7.5}, "LREN3": {"prod": "Smart Coupon", "prot": null, "ganho": 12.5, "barreira": 15, "prazo": 5, "fee": 1.65, "cupom": 12.5}, "AXIA3": {"prod": "Fence UI", "prot": 25, "ganho": 80, "barreira": 80, "prazo": 24, "fee": 3.5}, "NASD11": {"prod": "POP", "prot": 90, "ganho": null, "barreira": null, "prazo": 24, "fee": 4.19}, "VBBR3": {"prod": "Fence UI", "prot": 25, "ganho": 70, "barreira": 70, "prazo": 24, "fee": 3.3}, "PRIO3": {"prod": "Fence UI", "prot": 20, "ganho": 41.5, "barreira": 41.51, "prazo": 6, "fee": 1.01}, "B3SA3": {"prod": "Fence UI", "prot": 20, "ganho": 41, "barreira": 41.01, "prazo": 6, "fee": 1.02}, "PETR4": {"prod": "Fence UI", "prot": 15, "ganho": 26, "barreira": 26.01, "prazo": 4, "fee": 0.95}, "MSFT34": {"prod": "Fence UI", "prot": 10, "ganho": 36.91, "barreira": 36.92, "prazo": 12, "fee": 2.5}, "NVDC34": {"prod": "Fence", "prot": 20, "ganho": 25, "barreira": null, "prazo": 12, "fee": 2.37}, "DIVO11": {"prod": "Put Spread", "prot": 80, "ganho": null, "barreira": null, "prazo": 12, "fee": 13.5}, "ACWI11": {"prod": "Alocação Protegida", "prot": 100, "ganho": null, "barreira": null, "prazo": 23, "fee": 0.92}};
+const SD={"Collar UI": "estrutura sem desembolso de prêmio: protege na queda e participa da alta de forma limitada, com barreira de ativação", "Collar": "proteção na queda em troca de um teto de ganho na alta, sem prêmio", "Smart Coupon": "cupom pré-determinado garantido se o ativo não cair além da barreira na data de vencimento", "POP": "participação em metade da alta ilimitada com proteção parcial na queda", "DOC Bidirecional": "ganho dobrado na alta até um teto, com colchão de proteção na queda", "Fence UI": "proteção parcial na queda e ganho limitado na alta, sem prêmio, com barreira de ativação", "Fence": "proteção parcial na queda e ganho limitado na alta, sem prêmio", "Put Spread": "hedge alavancado para queda, com risco limitado ao prêmio pago", "Alocação Protegida": "participação ilimitada na alta com proteção do capital na queda, mediante prêmio"};
+const LT_V=LT.indexOf('VENDA'),LT_E=LT.indexOf('ESTRUTURADO'),LT_M=LT.indexOf('MANTER');
+let filtered=[...DATA],sC=-1,sD=1,pg=1,pp=25;
+const COLS=[{l:'#',k:null},{l:'Cliente',k:3},{l:'Ativo',k:4},{l:'Produto',k:5},
+  {l:'Rentab.(%)',k:6},{l:'P.Médio',k:7},{l:'Últ.Cot.',k:8},{l:'Vol.Atual',k:9},
+  {l:'Alvo BBG',k:10},{l:'Benndorf',k:12},{l:'Eleven',k:13},{l:'Levante',k:14},{l:'XP Rec.',k:15},
+  {l:'Score',k:16},{l:'Tipo Ação',k:17},{l:'Carteira Auto',k:19},{l:'Missão RV',k:20},
+  {l:'Estruturado',k:22},{l:'Ação',k:null}];
+function fN(v,d=2){return v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fPL(v){if(!v)return 'R$ 0';if(v>=1e9)return 'R$'+fN(v/1e9,2)+'bi';if(v>=1e6)return 'R$'+fN(v/1e6,2)+'M';if(v>=1e3)return 'R$'+fN(v/1e3,1)+'K';return 'R$'+fN(v,0)}
+function rC(i,L){const v=L[i]||'',l=v.toLowerCase();
+  if(!v)return '<span class="rx">—</span>';
+  if(l==='venda')return '<span class="rec rv">Venda</span>';
+  if(l.includes('não atrativa'))return '<span class="rec rv">Não Atr.</span>';
+  if(l==='compra'||l==='atrativa')return '<span class="rec rc">'+v+'</span>';
+  if(l.includes('sem cobertura'))return '<span class="rx">s/cob.</span>';
+  return '<span class="rec rn">'+v+'</span>';}
+function sC2(s,ti){const f={[LT_V]:'fv',[LT_E]:'fe',[LT_M]:'fm'}[ti]||'fm';
+  let b='';for(let i=0;i<4;i++)b+=`<span class="sb${i<s?' '+f:''}"></span>`;
+  return `<div class="sb-wrap"><div class="sbs">${b}</div><span class="sn">${s}/4</span></div>`;}
+function bC(ti){return{[LT_V]:'<span class="badge bv">🔴 VENDA</span>',[LT_E]:'<span class="badge be">🟡 ESTRUT.</span>',[LT_M]:'<span class="badge bm">🟢 MANTER</span>'}[ti]||'';}
+function aC(isA,ai){const t=LAU[ai]||'';if(isA&&t)return `<span class="ab" title="${t}">🤖 ${t}</span>`;if(isA)return '<span class="ab">🤖 Auto</span>';return '<span class="am">Manual</span>';}
+function rvC(r1,r2){let h='';if(r1===1)h+='<span class="rvb">🏆 RV 1.0</span> ';if(r2===1)h+='<span class="rvb">🏆 RV 2.0</span>';return h||'<span class="am">—</span>';}
+function eC(i){const e=LES[i]||'';if(e==='—'||!e)return '<span class="en">—</span>';return e.split(' · ').map(p=>`<span class="et">${p}</span>`).join(' ');}
+function rv(r,col){switch(col){case 5:return LP[r[5]];case 17:return LT[r[17]];case 19:return LAU[r[19]];case 22:return LES[r[22]];default:return r[col];}}
+function bldHd(){document.getElementById('thr').innerHTML=COLS.map(c=>c.k===null?`<th>${c.l}</th>`:`<th onclick="sBy(${c.k})" data-c="${c.k}">${c.l}<span class="ar"></span></th>`).join('');}
+function apF(){
+  const tip=document.getElementById('ft').value,aut=document.getElementById('fa').value,
+    prod=document.getElementById('fp').value,q=document.getElementById('fs').value.toLowerCase().trim();
+  const tiI=tip!==''?parseInt(tip):-1,prI=prod!==''?parseInt(prod):-1;
+  const bnIdx=LB.map((v,i)=>v.toLowerCase().includes('não atrativa')?i:-1).filter(i=>i>=0);
+  const evI=LE.indexOf('Venda'),lvI=LL.indexOf('Venda');
+  filtered=DATA.filter(r=>{
+    if(tiI>=0&&r[17]!==tiI)return false;
+    if(prI>=0&&r[5]!==prI)return false;
+    if(aut==='com'&&!r[18])return false;
+    if(aut==='sem'&&r[18])return false;
+    if(aut==='elv'&&r[13]!==evI)return false;
+    if(aut==='lev'&&r[14]!==lvI)return false;
+    if(aut==='bna'&&!bnIdx.includes(r[12]))return false;
+    if(q&&!(r[4].toLowerCase().includes(q)||r[3].includes(q)))return false;
+    return true;});
+  if(sC>=0)filtered.sort((a,b)=>{let x=rv(a,sC),y=rv(b,sC);
+    if(typeof x==='string')x=x.toLowerCase();if(typeof y==='string')y=y.toLowerCase();
+    if(x==null)x=sD>0?Infinity:-Infinity;if(y==null)y=sD>0?Infinity:-Infinity;
+    return x<y?-sD:x>y?sD:0;});
+  pg=1;rnd();upd();}
+function rnd(){
+  const tb=document.getElementById('tb'),em=document.getElementById('em');
+  if(!filtered.length){tb.innerHTML='';em.style.display='block';document.getElementById('pag').innerHTML='';
+    document.getElementById('cnt').innerHTML='<b>0</b> resultados';return;}
+  em.style.display='none';
+  const tot=filtered.length,pages=Math.ceil(tot/pp);if(pg>pages)pg=pages;
+  const st=(pg-1)*pp,sl=filtered.slice(st,st+pp);
+  const rcM={[LT_V]:'r-v',[LT_E]:'r-e',[LT_M]:'r-m'};
+  tb.innerHTML=sl.map((r,i)=>{const gi=DATA.indexOf(r);
+    return `<tr class="${rcM[r[17]]||'r-m'}">
+      <td class="cm" style="color:#94a3b8">${st+i+1}</td>
+      <td class="cc">${r[3]}</td><td class="ca">${r[4]}</td>
+      <td style="font-size:11px">${LP[r[5]]}</td>
+      <td class="cr ${r[6]==null?'':r[6]>=0?'p':'n'}">${r[6]==null?'—':fN(r[6])+'%'}</td>
+      <td class="cm">${r[7]==null?'—':'R$'+fN(r[7])}</td>
+      <td class="cm">${r[8]==null?'—':'R$'+fN(r[8])}</td>
+      <td class="cm" style="font-weight:600">${fPL(r[9])}</td>
+      <td class="cm">${r[10]==null?'—':'R$'+fN(r[10])}</td>
+      <td>${rC(r[12],LB)}</td><td>${rC(r[13],LE)}</td><td>${rC(r[14],LL)}</td><td>${rC(r[15],LXP)}</td>
+      <td>${sC2(r[16],r[17])}</td><td>${bC(r[17])}</td>
+      <td>${aC(r[18],r[19])}</td><td>${rvC(r[20],r[21])}</td>
+      <td class="ec">${eC(r[22])}</td>
+      <td><button class="btn-a" onclick="oM(${gi})">💬 Ação</button></td>
+    </tr>`;}).join('');
+  document.getElementById('cnt').innerHTML=`<b>${st+1}–${Math.min(st+pp,tot)}</b> de <b>${tot.toLocaleString('pt-BR')}</b>`;
+  bldPag(pages);}
+function bldPag(pages){if(pages<=1){document.getElementById('pag').innerHTML='';return;}
+  let h=`<button onclick="gP(1)" ${pg===1?'disabled':''}>«</button><button onclick="gP(${pg-1})" ${pg===1?'disabled':''}>‹</button>`;
+  let s=Math.max(1,pg-2),e=Math.min(pages,pg+2);
+  if(s>1)h+=`<button onclick="gP(1)">1</button>`+(s>2?'<span class="pi">…</span>':'');
+  for(let i=s;i<=e;i++)h+=`<button class="${i===pg?'active':''}" onclick="gP(${i})">${i}</button>`;
+  if(e<pages)h+=(e<pages-1?'<span class="pi">…</span>':'')+`<button onclick="gP(${pages})">${pages}</button>`;
+  h+=`<button onclick="gP(${pg+1})" ${pg===pages?'disabled':''}>›</button><button onclick="gP(${pages})" ${pg===pages?'disabled':''}>»</button>`;
+  h+=`<span class="pi">Pág. ${pg}/${pages}</span>`;document.getElementById('pag').innerHTML=h;}
+function gP(p){pg=p;rnd();window.scrollTo({top:document.querySelector('.twrap').offsetTop-80,behavior:'smooth'});}
+function upd(){const pl=filtered.reduce((s,r)=>s+r[9],0),
+  v=filtered.filter(r=>r[17]===LT_V).length,e=filtered.filter(r=>r[17]===LT_E).length,
+  m=filtered.filter(r=>r[17]===LT_M).length,au=filtered.filter(r=>r[18]).length;
+  document.getElementById('kpl').textContent=fPL(pl);
+  document.getElementById('kv').textContent=v.toLocaleString('pt-BR');
+  document.getElementById('ke').textContent=e.toLocaleString('pt-BR');
+  document.getElementById('km').textContent=m.toLocaleString('pt-BR');
+  document.getElementById('ka').textContent=au.toLocaleString('pt-BR');
+  document.getElementById('cpl').textContent=fPL(pl);}
+function oM(gi){const r=DATA[gi],tipo=LT[r[17]],ativo=r[4],rent=r[6],alvo=r[10],pct=r[11];
+  const enc=ENCARTE[ativo];let sh='',si='';
+  if(tipo==='VENDA'){const cs=(LE[r[13]]==='Venda'?1:0)+(LL[r[14]]==='Venda'?1:0);
+    sh=`<div class="scr sv">"Olá! Seu ativo <b>${ativo}</b> acumula <b>${rent==null?'—':fN(rent)+'%'}</b> de lucro desde a entrada${cs>0?` e <b>${cs}</b> casa(s) recomendam venda`:''}.${pct!=null?` Preço atual em <b>${fN(pct,1)}%</b> do alvo Bloomberg de R$${fN(alvo)}, ${pct>=100?'já acima do teto projetado':'próximo do teto'}.`:''} Momento oportuno para <b>realização de lucro</b>. Posso apresentar onde realocar?"</div>`;
+  }else if(tipo==='ESTRUTURADO'){const pn=enc?enc.prod:LES[r[22]].split(' · ')[0];
+    const sd=SD[pn]||'estrutura de proteção com participação na alta';
+    let ex='';
+    if(enc){if(enc.prod==='Collar UI'||enc.prod==='Collar')ex=`Ganha até <b>${fN(enc.ganho,0)}%</b> na alta${enc.barreira?` (barreira ${fN(enc.barreira,0)}%)`:''}. Proteção de <b>${enc.prot}%</b> na queda.`;
+      else if(enc.prod==='Smart Coupon')ex=`Cupom de <b>${fN(enc.cupom||enc.ganho,1)}%</b> se ${ativo} não cair mais de <b>${fN(enc.barreira,0)}%</b>.`;
+      else if(enc.prod==='POP')ex=`Metade da alta ilimitada de <b>${ativo}</b>, proteção de <b>${enc.prot}%</b> na queda.`;
+      else if(enc.prod.startsWith('Fence'))ex=`Até <b>${fN(enc.ganho,0)}%</b> na alta, proteção parcial de <b>${enc.prot}%</b> na queda.`;
+      else if(enc.prod==='Put Spread')ex=`Hedge de <b>${ativo}</b> para queda de até 20%, prêmio de 5%.`;
+      else if(enc.prod==='Alocação Protegida')ex=`Alta ilimitada com <b>${enc.prot}%</b> de proteção do capital.`;
+      si=`<div class="si"><b>${enc.prod}</b> · Prazo ${enc.prazo}m · Fee AAI ${fN(enc.fee,2)}%<br>${ex}</div>`;}
+    sh=`<div class="scr se">"Olá! Você tem <b>${ativo}</b>${rent!=null&&rent>=20?` com <b>${fN(rent)}%</b> de lucro`:''}. Em vez de vender, podemos montar um <b>${pn}</b>: ${sd}. ${enc&&enc.prot?`Mantém o papel com proteção de ${enc.prot}% na queda`:'Protege a posição'} e segue participando da alta. Posso enviar a proposta?"</div>${si}`;
+  }else sh=`<div class="scr">"<b>${ativo}</b> sem sinais de saída no momento. Recomenda-se <b>acompanhar</b>."</div>`;
+  let al='';
+  if(r[18]&&LAU[r[19]])al+=`<div class="alrt aa">⚠️ <span><b>Carteira automatizada:</b> ${LAU[r[19]]}. Verificar compatibilidade.</span></div>`;
+  if(r[20]===1)al+=`<div class="alrt ar">🏆 <span><b>Elegível Missão RV 1.0.</b> Não esqueça de registrar.</span></div>`;
+  if(r[21]===1)al+=`<div class="alrt ar">🏆 <span><b>Elegível Missão RV 2.0.</b> Não esqueça de registrar.</span></div>`;
+  document.getElementById('mod').innerHTML=`
+    <div class="mhd"><div class="mhl"><span class="mtag">${tipo==='VENDA'?'🔴 Venda Direta':tipo==='ESTRUTURADO'?'🟡 Produto Estruturado':'🟢 Acompanhar'}</span>
+      <span class="mttl">${ativo}</span></div><button class="mcls" onclick="cM()">×</button></div>
+    <div class="mbdy"><div class="mgrid">
+      <div class="mcell"><div class="mcl">Cliente</div><div class="mcv">${r[3]}</div></div>
+      <div class="mcell"><div class="mcl">PL da Posição</div><div class="mcv">${fPL(r[9])}</div></div>
+      <div class="mcell"><div class="mcl">Rentabilidade</div><div class="mcv">${r[6]==null?'—':fN(r[6])+'%'}</div></div>
+      <div class="mcell"><div class="mcl">Cotação / Alvo BBG</div><div class="mcv">${r[8]==null?'—':'R$'+fN(r[8])} / ${r[10]==null?'—':'R$'+fN(r[10])}</div></div>
+    </div>
+    <div class="msc"><div class="msh">💬 Script de Abordagem</div>${sh}${al}</div>
+    <div class="cn">Material interno. Resultados brutos — custos (0,27% registro + 0,015% permanência) e IR 15% não inclusos.</div>
+    </div>`;
+  document.getElementById('ov').classList.add('show');}
+function cM(){document.getElementById('ov').classList.remove('show');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cM();});
+function sBy(k){if(sC===k)sD*=-1;else{sC=k;sD=-1;}
+  document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('asc','desc');if(+th.dataset.c===k)th.classList.add(sD>0?'asc':'desc');});apF();}
+function expCSV(){
+  const H=['#','Cliente','Ativo','Produto','Rentab(%)','PrecoMedio','UltCotacao','VolAtual','AlvoBBG','PctAlvo','Benndorf','Eleven','Levante','XP','Score','TipoAcao','Automatizada','TipoCarteira','MissaoRV1','MissaoRV2','Estruturado'];
+  const rows=filtered.map((r,i)=>[i+1,r[3],r[4],LP[r[5]],r[6]??'',r[7]??'',r[8]??'',r[9],r[10]??'',r[11]??'',LB[r[12]],LE[r[13]],LL[r[14]],LXP[r[15]],r[16],LT[r[17]],r[18]?'Sim':'Não',LAU[r[19]]||'',r[20]===1?'Sim':'Não',r[21]===1?'Sim':'Não',LES[r[22]]]);
+  const csv=[H,...rows].map(row=>row.map(v=>{v=String(v);return v.includes(',')||v.includes('"')?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='painel_A23963.csv';a.click();}
+['ft','fa','fp'].forEach(id=>document.getElementById(id).addEventListener('change',apF));
+document.getElementById('fs').addEventListener('input',apF);
+bldHd();apF();
+
+</script>
+</body>
+</html>
